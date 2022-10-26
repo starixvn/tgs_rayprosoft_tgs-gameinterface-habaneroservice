@@ -339,6 +339,7 @@ public class HabaneroController : ControllerBase
                 PlayerCode: gameRecord.PlayerCode,
                 ExternalRoundId: gameRecord.ExternalRoundId,
                 ExternalGameId: gameRecord.ExternalGameId,
+                GameStateId: gameRecord.GameStateId,
                 ExternalCreatedOn: gameRecord.ExternalCreatedOn,
                 ExternalClosedOn: gameRecord.ExternalClosedOn,
                 Bet: gameRecord.Bet,

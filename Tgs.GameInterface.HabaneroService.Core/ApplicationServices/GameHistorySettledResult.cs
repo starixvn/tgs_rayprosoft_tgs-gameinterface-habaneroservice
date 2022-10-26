@@ -3,7 +3,8 @@
 public record GameHistorySettledResult(
     string PlayerCode,
     string ExternalRoundId,
-    string ExternalGameId,    
+    string ExternalGameId,
+    int GameStateId,
     DateTimeOffset ExternalCreatedOn,
     DateTimeOffset ExternalClosedOn,
     decimal Bet,

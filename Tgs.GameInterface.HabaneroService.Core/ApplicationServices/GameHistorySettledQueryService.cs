@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.HabaneroService.Core.ApplicationServices;
@@ -15,7 +14,7 @@ internal class GameHistorySettledQueryService : IQueryService<GameHistorySettled
     }
 
     public async IAsyncEnumerable<GameHistorySettledResult> QueryAsync(GameHistorySettledQuery query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {        
+    {
         var bettingHistoryBets = await _client
                 .GetBrandCompletedGameResultsV2Async(
                     apiUrl: query.ApiUrl,
@@ -40,6 +39,7 @@ internal class GameHistorySettledQueryService : IQueryService<GameHistorySettled
                 PlayerCode: bettingHistoryBet.Username,
                 ExternalRoundId: bettingHistoryBet.FriendlyGameInstanceId.ToString(),
                 ExternalGameId: bettingHistoryBet.GameKeyName,
+                GameStateId: bettingHistoryBet.GameStateId,
                 ExternalCreatedOn: bettingHistoryBet.DtStarted,
                 ExternalClosedOn: bettingHistoryBet.DtCompleted,
                 Bet: bettingHistoryBet.Stake,
