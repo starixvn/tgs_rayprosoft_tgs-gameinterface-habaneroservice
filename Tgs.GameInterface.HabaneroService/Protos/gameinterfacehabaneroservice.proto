@@ -103,30 +103,18 @@ message GameHistorySettledReply {
 message GameHistorySettled {
     string player_code = 1;
     string external_round_id = 2;
-    string external_game_id = 3;    
-	google.protobuf.Timestamp external_created_on = 4;
-	google.protobuf.Timestamp external_closed_on = 5;
-	phoenix.protobuf.DecimalValue bet = 6;
-	phoenix.protobuf.DecimalValue valid_bet = 7;
-	phoenix.protobuf.DecimalValue player_win_loss = 8;
-	phoenix.protobuf.DecimalValue turnover = 9;
-	phoenix.protobuf.DecimalValue settle = 10;    
+    string external_game_id = 3;
+	int32 game_state_id = 4;
+	google.protobuf.Timestamp external_created_on = 5;
+	google.protobuf.Timestamp external_closed_on = 6;
+	phoenix.protobuf.DecimalValue bet = 7;
+	phoenix.protobuf.DecimalValue valid_bet = 8;
+	phoenix.protobuf.DecimalValue player_win_loss = 9;
+	phoenix.protobuf.DecimalValue turnover = 10;
+	phoenix.protobuf.DecimalValue settle = 11;    
 }
 
 message GameTokenReply {
 	bool is_player_exist = 1;
 	string auth_token = 2;
-}
-
-enum GameHistoryStatus{
-	GAME_HISTORY_STATUS_UNKNOWN = 0;
-	GAME_HISTORY_STATUS_OPENED = 1;
-	GAME_HISTORY_STATUS_WON = 2;
-	GAME_HISTORY_STATUS_LOST = 3;
-	GAME_HISTORY_STATUS_HALF_WON = 4;
-	GAME_HISTORY_STATUS_HALF_LOST = 5;
-	GAME_HISTORY_STATUS_CANCELED = 6;
-	GAME_HISTORY_STATUS_CASHOUT = 7;
-	GAME_HISTORY_STATUS_DRAW = 8;
-	GAME_HISTORY_STATUS_DECLINED = 9;
 }

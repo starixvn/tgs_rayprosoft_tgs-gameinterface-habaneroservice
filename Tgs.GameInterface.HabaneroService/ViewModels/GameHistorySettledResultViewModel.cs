@@ -4,7 +4,7 @@ public record GameHistorySettledResultViewModel(
     string PlayerCode,
     string ExternalRoundId,
     string ExternalGameId,
-    //GameHistoryStatus Status,
+    int GameStateId,
     DateTimeOffset ExternalCreatedOn,
     DateTimeOffset ExternalClosedOn,
     decimal Bet,
