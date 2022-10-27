@@ -13,6 +13,8 @@ public interface IGameApiClient
         string currencyCode,
         string useragent,
         string playerHostAddress,
+        string? firstName,
+        string? lastName,
         CancellationToken cancellationToken = default);
 
     ValueTask<DepositPlayerMoneyResult> DepositPlayerMoneyAsync(

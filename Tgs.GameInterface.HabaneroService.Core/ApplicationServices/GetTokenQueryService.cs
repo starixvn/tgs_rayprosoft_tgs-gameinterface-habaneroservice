@@ -22,6 +22,8 @@ internal class GetTokenQueryService : IGetService<GetTokenQuery, GetTokenResult>
            currencyCode: query.CurrencyCode,
            useragent: query.UserAgent,
            playerHostAddress: query.PlayerHostAddress,
+           firstName: query.FirstName,
+           lastName: query.LastName,
            cancellationToken).ConfigureAwait(false);
 
         return new GetTokenResult(result.Token);

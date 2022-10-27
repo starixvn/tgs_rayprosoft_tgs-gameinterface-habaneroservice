@@ -49,7 +49,9 @@ public class LoginOrCreatePlayerUnitTest
             password: "HabaTfP@ssw0rd",
             currencyCode: "RMB",
             useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
-            playerHostAddress: "127.0.0.1")
+            playerHostAddress: "127.0.0.1",
+            firstName: "GPI",
+            lastName: "4ucmqplxb029")
             .ConfigureAwait(false);
 
         Assert.IsNotNull(actual);

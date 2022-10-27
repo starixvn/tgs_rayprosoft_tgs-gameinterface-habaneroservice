@@ -170,7 +170,9 @@ public class HabaneroController : ControllerBase
             UserAgent: source.UserAgent,
             Username: source.Username,
             Password: source.Password,
-            CurrencyCode: source.CurrencyCode);
+            CurrencyCode: source.CurrencyCode,
+            FirstName: source.FirstName,
+            LastName: source.LastName);
 
         return service.ExecuteAsync(
                 command: command,
@@ -252,7 +254,9 @@ public class HabaneroController : ControllerBase
             UserAgent: source.UserAgent,
             Username: source.Username,
             Password: source.Password,
-            CurrencyCode: source.CurrencyCode);
+            CurrencyCode: source.CurrencyCode,
+            FirstName: source.FirstName,
+            LastName: source.LastName);
 
         var result = await service
             .GetAsync(query, HttpContext.RequestAborted)
