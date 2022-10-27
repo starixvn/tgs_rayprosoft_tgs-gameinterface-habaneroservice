@@ -132,6 +132,8 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
         string username,
         string password,
         string currencyCode,
+        string? firstName,
+        string? lastName,
         CancellationToken cancellationToken = default)
     {
         var request = new GameTokenRequest
@@ -144,6 +146,8 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             Username = username,
             Password = password,
             CurrencyCode = currencyCode,
+            FirstName = firstName,
+            LastName = lastName,
         };
         return await _client
             .GameTokenAsync(request, cancellationToken: cancellationToken)
@@ -180,6 +184,8 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
         string username,
         string password,
         string currencyCode,
+        string? firstName,
+        string? lastName,
         CancellationToken cancellationToken = default)
     {
         var request = new PlayerCreateRequest
@@ -192,6 +198,8 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             Username = username,
             Password = password,
             CurrencyCode = currencyCode,
+            FirstName = firstName,
+            LastName = lastName,
         };
         _ = await _client
             .PlayerCreateAsync(request, cancellationToken: cancellationToken)

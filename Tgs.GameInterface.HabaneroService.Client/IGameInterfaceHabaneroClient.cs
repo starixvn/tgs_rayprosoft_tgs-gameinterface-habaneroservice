@@ -43,6 +43,8 @@ public interface IGameInterfaceHabaneroClient
         string username,
         string password,
         string currencyCode,
+        string? firstName,
+        string? lastName,
         CancellationToken cancellationToken = default);
 
     IAsyncEnumerable<GameHistorySettled> GameHistorySettledAsync(
@@ -70,5 +72,7 @@ public interface IGameInterfaceHabaneroClient
         string username,
         string password,
         string currencyCode,
+        string? firstName,
+        string? lastName,
         CancellationToken cancellationToken = default);
 }
