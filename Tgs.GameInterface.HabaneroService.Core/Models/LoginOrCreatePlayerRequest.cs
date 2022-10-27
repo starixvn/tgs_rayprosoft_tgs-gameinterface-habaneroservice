@@ -26,4 +26,7 @@ public record LoginOrCreatePlayerRequest
     public string Password { get; set; } = default!;
 
     public string CurrencyCode { get; set; } = default!;
+
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
 }

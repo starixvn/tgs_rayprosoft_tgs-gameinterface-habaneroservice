@@ -23,6 +23,8 @@ internal class PlayerCreateCommandService : ICommandService<PlayerCreateCommand>
            currencyCode: command.CurrencyCode,
            useragent: command.UserAgent,
            playerHostAddress: command.PlayerHostAddress,
+           firstName: command.FirstName,
+           lastName: command.LastName,
            cancellationToken).ConfigureAwait(false);
     }
 }

@@ -122,6 +122,8 @@ internal class GameApiClient : IGameApiClient
         string currencyCode,
         string useragent,
         string playerHostAddress,
+        string? firstName,
+        string? lastName,
         CancellationToken cancellationToken = default)
     {
         var request = new LoginOrCreatePlayerRequest
@@ -134,6 +136,8 @@ internal class GameApiClient : IGameApiClient
             Username = username,
             Password = password,
             CurrencyCode = currencyCode,
+            FirstName = firstName,
+            LastName = lastName,
         };
 
         var url = new Uri(apiUrl, "/jsonapi/loginorcreateplayer");

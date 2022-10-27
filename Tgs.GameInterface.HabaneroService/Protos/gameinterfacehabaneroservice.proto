@@ -56,6 +56,8 @@ message PlayerCreateRequest {
 	string username = 6;
 	string password = 7;
 	string currency_code = 8;
+	string first_name = 9;
+	string last_name = 10;
 }
 
 message GameHistorySettledRequest {
@@ -75,6 +77,8 @@ message GameTokenRequest {
 	string username = 6;
 	string password = 7;
 	string currency_code = 8;
+	string first_name = 9;
+	string last_name = 10;
 }
 
 // The response message containing the greetings.

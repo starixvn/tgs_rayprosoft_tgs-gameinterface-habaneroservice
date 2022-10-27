@@ -109,7 +109,9 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             UserAgent: request.UserAgent,
             Username: request.Username,
             Password: request.Password,
-            CurrencyCode: request.CurrencyCode);
+            CurrencyCode: request.CurrencyCode,
+            FirstName: request.FirstName,
+            LastName: request.LastName);
 
         var result = await _getTokenService
             .GetAsync(query, context.CancellationToken)
@@ -190,7 +192,9 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             UserAgent: request.UserAgent,
             Username: request.Username,
             Password: request.Password,
-            CurrencyCode: request.CurrencyCode);
+            CurrencyCode: request.CurrencyCode,
+            FirstName: request.FirstName,
+            LastName: request.LastName);
 
         await _playerCreateService
             .ExecuteAsync(command, context.CancellationToken)

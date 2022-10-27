@@ -8,4 +8,6 @@ public record PlayerCreateCommand(
     string UserAgent,
     string Username,
     string Password,
-    string CurrencyCode);
+    string CurrencyCode,
+    string? FirstName,
+    string? LastName);
