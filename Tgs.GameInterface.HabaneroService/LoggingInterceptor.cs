@@ -10,7 +10,7 @@ internal class LoggingInterceptor : Interceptor
 
     public LoggingInterceptor(
         ILogger<LoggingInterceptor> logger,
-         DiagnosticsInterceptorOptions options)
+        DiagnosticsInterceptorOptions options)
     {
         _logger = logger;
         _options = options ?? throw new ArgumentNullException(nameof(options));
