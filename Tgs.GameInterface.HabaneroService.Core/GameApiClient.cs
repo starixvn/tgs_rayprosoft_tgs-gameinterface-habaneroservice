@@ -225,7 +225,9 @@ internal class GameApiClient : IGameApiClient
 
         if (!found)
         {
-            throw new Exception($"Query player failed.({JsonSerializer.Serialize(document)})");
+            return new QueryPlayerResult(
+                        IsPlayerExist: found,
+                        Balance: 0);
         }
 
         var jsonRealBalance = document.RootElement.GetProperty("RealBalance");
