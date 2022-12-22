@@ -4,19 +4,6 @@ namespace Tgs.GameInterface.HabaneroService.Core;
 
 public interface IGameApiClient
 {
-    ValueTask<LoginOrCreatePlayerResult> LoginOrCreatePlayerAsync(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        string username,
-        string password,
-        string currencyCode,
-        string useragent,
-        string playerHostAddress,
-        string? firstName,
-        string? lastName,
-        CancellationToken cancellationToken = default);
-
     ValueTask<DepositPlayerMoneyResult> DepositPlayerMoneyAsync(
         Uri apiUrl,
         string brandId,
@@ -28,15 +15,25 @@ public interface IGameApiClient
         string requestId,
         CancellationToken cancellationToken = default);
 
-    ValueTask<WithdrawPlayerMoneyResult> WithdrawPlayerMoneyAsync(
+    IAsyncEnumerable<GetBrandCompletedGameResultsV2Result> GetBrandCompletedGameResultsV2Async(
         Uri apiUrl,
+        string brandId,
+        string apiKey,
+        DateTime dtStartUTC,
+        DateTime dtEndUTC,
+        CancellationToken cancellationToken = default);
+
+    ValueTask<LoginOrCreatePlayerResult> LoginOrCreatePlayerAsync(
+                Uri apiUrl,
         string brandId,
         string apiKey,
         string username,
         string password,
         string currencyCode,
-        decimal amount,
-        string requestId,
+        string useragent,
+        string playerHostAddress,
+        string? firstName,
+        string? lastName,
         CancellationToken cancellationToken = default);
 
     ValueTask<bool> LogOutPlayerAsync(
@@ -55,19 +52,22 @@ public interface IGameApiClient
         string password,
         CancellationToken cancellationToken = default);
 
-    IAsyncEnumerable<GetBrandCompletedGameResultsV2Result> GetBrandCompletedGameResultsV2Async(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        DateTime dtStartUTC,
-        DateTime dtEndUTC,
-        CancellationToken cancellationToken = default);
-
     ValueTask<bool> QueryTransferAsync(
         Uri apiUrl,
         string brandId,
         string apiKey,
         string username,
+        string requestId,
+        CancellationToken cancellationToken = default);
+
+    ValueTask<WithdrawPlayerMoneyResult> WithdrawPlayerMoneyAsync(
+                    Uri apiUrl,
+        string brandId,
+        string apiKey,
+        string username,
+        string password,
+        string currencyCode,
+        decimal amount,
         string requestId,
         CancellationToken cancellationToken = default);
 }

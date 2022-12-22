@@ -136,10 +136,10 @@ public class HabaneroController : ControllerBase
     }
 
     /// <summary>
-    /// Players the create asynchronous.
+    /// Games the history settled asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
-    /// <param name="source">The source.</param>
+    /// <param name="model">The model.</param>
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
@@ -150,73 +150,47 @@ public class HabaneroController : ControllerBase
     ///             "apiUrl": "https://ws-test.insvr.com",
     ///             "brandId": "b97e1834-d142-ed11-a27c-0050f23876f7",
     ///             "apiKey": "0F0B9E83-80FF-4DC7-8C8C-DF48B55DAE45",
-    ///             "playerHostAddress": "127.0.0.1",
-    ///             "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
-    ///             "username": "4ucmqplxb029",
-    ///             "password": "HabaTfP@ssw0rd",
-    ///             "currencyCode": "RMB"
+    ///             "startTime": "2022-10-20T09:10:00.000Z",
+    ///             "endTime": "2022-10-20T09:25:00.000Z"
     ///         }
     /// </remarks>
-    [HttpPost("player/create", Name = "PlayerCreate")]
-    public ValueTask PlayerCreateAsync(
-        [FromServices] ICommandService<PlayerCreateCommand> service,
-        PlayerCreateViewModel source)
+    [HttpPost("game/history/settled", Name = "GameHistorySettled")]
+    public async IAsyncEnumerable<GameHistorySettledResultViewModel> GameHistorySettledAsync(
+            [FromServices] IQueryService<GameHistorySettledQuery, GameHistorySettledResult> service,
+            GameHistorySettledViewModel model)
     {
-        var command = new PlayerCreateCommand(
-            ApiUrl: source.ApiUrl,
-            BrandId: source.BrandId,
-            ApiKey: source.ApiKey,
-            PlayerHostAddress: source.PlayerHostAddress,
-            UserAgent: source.UserAgent,
-            Username: source.Username,
-            Password: source.Password,
-            CurrencyCode: source.CurrencyCode,
-            FirstName: source.FirstName,
-            LastName: source.LastName);
+        var query = new GameHistorySettledQuery(
+            ApiUrl: model.ApiUrl,
+            BrandId: model.BrandId,
+            ApiKey: model.ApiKey,
+            StartTime: model.StartTime,
+            EndTime: model.EndTime);
 
-        return service.ExecuteAsync(
-                command: command,
-                cancellationToken: HttpContext.RequestAborted);
-    }
-
-    /// <summary>
-    /// Players the balance asynchronous.
-    /// </summary>
-    /// <param name="service">The service.</param>
-    /// <param name="source">The source.</param>
-    /// <returns></returns>
-    /// <remarks>
-    /// <b>Example</b><br />
-    ///
-    ///     Post
-    ///
-    ///         {
-    ///             "apiUrl": "https://ws-test.insvr.com",
-    ///             "brandId": "b97e1834-d142-ed11-a27c-0050f23876f7",
-    ///             "apiKey": "0F0B9E83-80FF-4DC7-8C8C-DF48B55DAE45",
-    ///             "username": "4ucmqplxb029",
-    ///             "password": "HabaTfP@ssw0rd"
-    ///         }
-    /// </remarks>
-    [HttpPost("player/balance", Name = "PlayerBalance")]
-    public async ValueTask<PlayerBalanceResultViewModel> PlayerBalanceAsync(
-        [FromServices] IGetService<PlayerBalanceQuery, PlayerBalanceResult> service,
-        PlayerBalanceViewModel source)
-    {
-        var query = new PlayerBalanceQuery(
-            ApiUrl: source.ApiUrl,
-            BrandId: source.BrandId,
-            ApiKey: source.ApiKey,
-            Username: source.Username,
-            Password: source.Password);
-
-        var result = await service
-            .GetAsync(query, HttpContext.RequestAborted)
+        var gameRecords = await service
+            .QueryAsync(query, HttpContext.RequestAborted)
+            .ToArrayAsync(HttpContext.RequestAborted)
             .ConfigureAwait(false);
 
-        return new PlayerBalanceResultViewModel(
-            result.IsPlayerExist,
-            result.Balance);
+        if (!gameRecords.Any())
+        {
+            yield break;
+        }
+
+        foreach (var gameRecord in gameRecords)
+        {
+            yield return new GameHistorySettledResultViewModel(
+                PlayerCode: gameRecord.PlayerCode,
+                ExternalRoundId: gameRecord.ExternalRoundId,
+                ExternalGameId: gameRecord.ExternalGameId,
+                GameStateId: gameRecord.GameStateId,
+                ExternalCreatedOn: gameRecord.ExternalCreatedOn,
+                ExternalClosedOn: gameRecord.ExternalClosedOn,
+                Bet: gameRecord.Bet,
+                ValidBet: gameRecord.ValidBet,
+                PlayerWinLoss: gameRecord.PlayerWinLoss,
+                Turnover: gameRecord.Turnover,
+                Settle: gameRecord.Settle);
+        }
     }
 
     /// <summary>
@@ -297,10 +271,10 @@ public class HabaneroController : ControllerBase
             model.Password));
 
     /// <summary>
-    /// Games the history settled asynchronous.
+    /// Players the balance asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
-    /// <param name="model">The model.</param>
+    /// <param name="source">The source.</param>
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
@@ -311,46 +285,72 @@ public class HabaneroController : ControllerBase
     ///             "apiUrl": "https://ws-test.insvr.com",
     ///             "brandId": "b97e1834-d142-ed11-a27c-0050f23876f7",
     ///             "apiKey": "0F0B9E83-80FF-4DC7-8C8C-DF48B55DAE45",
-    ///             "startTime": "2022-10-20T09:10:00.000Z",
-    ///             "endTime": "2022-10-20T09:25:00.000Z"
+    ///             "username": "4ucmqplxb029",
+    ///             "password": "HabaTfP@ssw0rd"
     ///         }
     /// </remarks>
-    [HttpPost("game/history/settled", Name = "GameHistorySettled")]
-    public async IAsyncEnumerable<GameHistorySettledResultViewModel> GameHistorySettledAsync(
-            [FromServices] IQueryService<GameHistorySettledQuery, GameHistorySettledResult> service,
-            GameHistorySettledViewModel model)
+    [HttpPost("player/balance", Name = "PlayerBalance")]
+    public async ValueTask<PlayerBalanceResultViewModel> PlayerBalanceAsync(
+        [FromServices] IGetService<PlayerBalanceQuery, PlayerBalanceResult> service,
+        PlayerBalanceViewModel source)
     {
-        var query = new GameHistorySettledQuery(
-            ApiUrl: model.ApiUrl,
-            BrandId: model.BrandId,
-            ApiKey: model.ApiKey,
-            StartTime: model.StartTime,
-            EndTime: model.EndTime);
+        var query = new PlayerBalanceQuery(
+            ApiUrl: source.ApiUrl,
+            BrandId: source.BrandId,
+            ApiKey: source.ApiKey,
+            Username: source.Username,
+            Password: source.Password);
 
-        var gameRecords = await service
-            .QueryAsync(query, HttpContext.RequestAborted)
-            .ToArrayAsync(HttpContext.RequestAborted)
+        var result = await service
+            .GetAsync(query, HttpContext.RequestAborted)
             .ConfigureAwait(false);
 
-        if (!gameRecords.Any())
-        {
-            yield break;
-        }
+        return new PlayerBalanceResultViewModel(
+            result.IsPlayerExist,
+            result.Balance);
+    }
 
-        foreach (var gameRecord in gameRecords)
-        {
-            yield return new GameHistorySettledResultViewModel(
-                PlayerCode: gameRecord.PlayerCode,
-                ExternalRoundId: gameRecord.ExternalRoundId,
-                ExternalGameId: gameRecord.ExternalGameId,
-                GameStateId: gameRecord.GameStateId,
-                ExternalCreatedOn: gameRecord.ExternalCreatedOn,
-                ExternalClosedOn: gameRecord.ExternalClosedOn,
-                Bet: gameRecord.Bet,
-                ValidBet: gameRecord.ValidBet,
-                PlayerWinLoss: gameRecord.PlayerWinLoss,
-                Turnover: gameRecord.Turnover,
-                Settle: gameRecord.Settle);
-        }
+    /// <summary>
+    /// Players the create asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="source">The source.</param>
+    /// <returns></returns>
+    /// <remarks>
+    /// <b>Example</b><br />
+    ///
+    ///     Post
+    ///
+    ///         {
+    ///             "apiUrl": "https://ws-test.insvr.com",
+    ///             "brandId": "b97e1834-d142-ed11-a27c-0050f23876f7",
+    ///             "apiKey": "0F0B9E83-80FF-4DC7-8C8C-DF48B55DAE45",
+    ///             "playerHostAddress": "127.0.0.1",
+    ///             "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
+    ///             "username": "4ucmqplxb029",
+    ///             "password": "HabaTfP@ssw0rd",
+    ///             "currencyCode": "RMB"
+    ///         }
+    /// </remarks>
+    [HttpPost("player/create", Name = "PlayerCreate")]
+    public ValueTask PlayerCreateAsync(
+        [FromServices] ICommandService<PlayerCreateCommand> service,
+        PlayerCreateViewModel source)
+    {
+        var command = new PlayerCreateCommand(
+            ApiUrl: source.ApiUrl,
+            BrandId: source.BrandId,
+            ApiKey: source.ApiKey,
+            PlayerHostAddress: source.PlayerHostAddress,
+            UserAgent: source.UserAgent,
+            Username: source.Username,
+            Password: source.Password,
+            CurrencyCode: source.CurrencyCode,
+            FirstName: source.FirstName,
+            LastName: source.LastName);
+
+        return service.ExecuteAsync(
+                command: command,
+                cancellationToken: HttpContext.RequestAborted);
     }
 }

@@ -66,25 +66,27 @@ internal class GameApiClient : IGameApiClient
         return new DepositPlayerMoneyResult(transactionId, realBalance);
     }
 
-    public async ValueTask<WithdrawPlayerMoneyResult> WithdrawPlayerMoneyAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, string currencyCode, decimal amount, string requestId, CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<GetBrandCompletedGameResultsV2Result> GetBrandCompletedGameResultsV2Async(
+        Uri apiUrl,
+        string brandId,
+        string apiKey,
+        DateTime startTime,
+        DateTime endTime,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var request = new WithdrawPlayerMoneyRequest
+        var request = new GetBrandCompletedGameResultsV2Request
         {
             BrandId = brandId,
             APIKey = apiKey,
-            Username = username,
-            Password = password,
-            CurrencyCode = currencyCode,
-            Amount = -amount,
-            WithdrawAll = false,
-            RequestId = requestId
+            DtStartUTC = startTime.ToString("yyyyMMddHHmmss"),
+            DtEndUTC = endTime.ToString("yyyyMMddHHmmss")
         };
 
-        var url = new Uri(apiUrl, "/jsonapi/WithdrawPlayerMoney");
+        var url = new Uri(apiUrl, "/jsonapi/GetBrandCompletedGameResultsV2");
         var document = await PostAsync(
             url,
             request,
-            "WithdrawPlayerMoney",
+            "GetBrandCompletedGameResultsV2",
             cancellationToken).ConfigureAwait(false);
 
         if (document is null)
@@ -92,25 +94,18 @@ internal class GameApiClient : IGameApiClient
             throw new Exception("Document is empty.");
         }
 
-        if (!document.RootElement.TryGetProperty("Success", out var jsonSuccess))
+        var results = JsonSerializer.Deserialize<IEnumerable<GetBrandCompletedGameResultsV2Result>>(document)
+            ?? Enumerable.Empty<GetBrandCompletedGameResultsV2Result>();
+
+        if (!results.Any())
         {
-            throw new Exception($"JsonElement parsing failed.({JsonSerializer.Serialize(document)})");
+            yield break;
         }
 
-        var success = jsonSuccess.GetBoolean();
-
-        if (success is false)
+        foreach (var result in results)
         {
-            throw new Exception($"WithdrawPlayerMoney failed.({JsonSerializer.Serialize(document)})");
+            yield return result;
         }
-
-        var jsonTransactionId = document.RootElement.GetProperty("TransactionId");
-        var jsonRealBalance = document.RootElement.GetProperty("RealBalance");
-
-        var transactionId = jsonTransactionId.ToString();
-        var realBalance = jsonRealBalance.GetDecimal();
-
-        return new WithdrawPlayerMoneyResult(transactionId, realBalance);
     }
 
     public async ValueTask<LoginOrCreatePlayerResult> LoginOrCreatePlayerAsync(
@@ -239,48 +234,6 @@ internal class GameApiClient : IGameApiClient
             Balance: realBalance);
     }
 
-    public async IAsyncEnumerable<GetBrandCompletedGameResultsV2Result> GetBrandCompletedGameResultsV2Async(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        DateTime startTime,
-        DateTime endTime,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        var request = new GetBrandCompletedGameResultsV2Request
-        {
-            BrandId = brandId,
-            APIKey = apiKey,
-            DtStartUTC = startTime.ToString("yyyyMMddHHmmss"),
-            DtEndUTC = endTime.ToString("yyyyMMddHHmmss")
-        };
-
-        var url = new Uri(apiUrl, "/jsonapi/GetBrandCompletedGameResultsV2");
-        var document = await PostAsync(
-            url,
-            request,
-            "GetBrandCompletedGameResultsV2",
-            cancellationToken).ConfigureAwait(false);
-
-        if (document is null)
-        {
-            throw new Exception("Document is empty.");
-        }
-
-        var results = JsonSerializer.Deserialize<IEnumerable<GetBrandCompletedGameResultsV2Result>>(document)
-            ?? Enumerable.Empty<GetBrandCompletedGameResultsV2Result>();
-
-        if (!results.Any())
-        {
-            yield break;
-        }
-
-        foreach (var result in results)
-        {
-            yield return result;
-        }
-    }
-
     public async ValueTask<bool> QueryTransferAsync(Uri apiUrl, string brandId, string apiKey, string username, string requestId, CancellationToken cancellationToken = default)
     {
         var request = new QueryTransferRequest
@@ -311,6 +264,53 @@ internal class GameApiClient : IGameApiClient
         var success = jsonSuccess.GetBoolean();
 
         return success;
+    }
+
+    public async ValueTask<WithdrawPlayerMoneyResult> WithdrawPlayerMoneyAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, string currencyCode, decimal amount, string requestId, CancellationToken cancellationToken = default)
+    {
+        var request = new WithdrawPlayerMoneyRequest
+        {
+            BrandId = brandId,
+            APIKey = apiKey,
+            Username = username,
+            Password = password,
+            CurrencyCode = currencyCode,
+            Amount = -amount,
+            WithdrawAll = false,
+            RequestId = requestId
+        };
+
+        var url = new Uri(apiUrl, "/jsonapi/WithdrawPlayerMoney");
+        var document = await PostAsync(
+            url,
+            request,
+            "WithdrawPlayerMoney",
+            cancellationToken).ConfigureAwait(false);
+
+        if (document is null)
+        {
+            throw new Exception("Document is empty.");
+        }
+
+        if (!document.RootElement.TryGetProperty("Success", out var jsonSuccess))
+        {
+            throw new Exception($"JsonElement parsing failed.({JsonSerializer.Serialize(document)})");
+        }
+
+        var success = jsonSuccess.GetBoolean();
+
+        if (success is false)
+        {
+            throw new Exception($"WithdrawPlayerMoney failed.({JsonSerializer.Serialize(document)})");
+        }
+
+        var jsonTransactionId = document.RootElement.GetProperty("TransactionId");
+        var jsonRealBalance = document.RootElement.GetProperty("RealBalance");
+
+        var transactionId = jsonTransactionId.ToString();
+        var realBalance = jsonRealBalance.GetDecimal();
+
+        return new WithdrawPlayerMoneyResult(transactionId, realBalance);
     }
 
     private async ValueTask<JsonDocument> PostAsync(Uri apiUrl, object request, string logPrefix, CancellationToken cancellationToken = default)

@@ -11,10 +11,10 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
     private readonly IGetService<FundInQuery, FundResult> _fundInService;
     private readonly IGetService<FundOutQuery, FundResult> _fundOutService;
     private readonly IGetService<FundStatusQuery, bool> _fundStatusService;
-    private readonly ICommandService<PlayerCreateCommand> _playerCreateService;
-    private readonly IGetService<PlayerBalanceQuery, PlayerBalanceResult> _playerBalanceService;
-    private readonly IGetService<GetTokenQuery, GetTokenResult> _getTokenService;
     private readonly IQueryService<GameHistorySettledQuery, GameHistorySettledResult> _gameHistorySettledService;
+    private readonly IGetService<GetTokenQuery, GetTokenResult> _getTokenService;
+    private readonly IGetService<PlayerBalanceQuery, PlayerBalanceResult> _playerBalanceService;
+    private readonly ICommandService<PlayerCreateCommand> _playerCreateService;
 
     public GameInterfaceHabaneroGrpcService(
         IGetService<FundInQuery, FundResult> fundInService,
@@ -99,30 +99,6 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
         };
     }
 
-    public override async Task<GameTokenReply> GameToken(GameTokenRequest request, ServerCallContext context)
-    {
-        var query = new GetTokenQuery(
-            ApiUrl: new(request.ApiUrl),
-            BrandId: request.BrandId,
-            ApiKey: request.ApiKey,
-            PlayerHostAddress: request.PlayerHostAddress,
-            UserAgent: request.UserAgent,
-            Username: request.Username,
-            Password: request.Password,
-            CurrencyCode: request.CurrencyCode,
-            FirstName: request.FirstName,
-            LastName: request.LastName);
-
-        var result = await _getTokenService
-            .GetAsync(query, context.CancellationToken)
-            .ConfigureAwait(false);
-
-        return new GameTokenReply()
-        {
-            AuthToken = result.Token
-        };
-    }
-
     public override async Task<GameHistorySettledReply> GameHistorySettled(GameHistorySettledRequest request, ServerCallContext context)
     {
         var query = new GameHistorySettledQuery(
@@ -160,6 +136,30 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
         }
 
         return reply;
+    }
+
+    public override async Task<GameTokenReply> GameToken(GameTokenRequest request, ServerCallContext context)
+    {
+        var query = new GetTokenQuery(
+            ApiUrl: new(request.ApiUrl),
+            BrandId: request.BrandId,
+            ApiKey: request.ApiKey,
+            PlayerHostAddress: request.PlayerHostAddress,
+            UserAgent: request.UserAgent,
+            Username: request.Username,
+            Password: request.Password,
+            CurrencyCode: request.CurrencyCode,
+            FirstName: request.FirstName,
+            LastName: request.LastName);
+
+        var result = await _getTokenService
+            .GetAsync(query, context.CancellationToken)
+            .ConfigureAwait(false);
+
+        return new GameTokenReply()
+        {
+            AuthToken = result.Token
+        };
     }
 
     public override async Task<PlayerBalanceReply> PlayerBalance(PlayerBalanceRequest request, ServerCallContext context)

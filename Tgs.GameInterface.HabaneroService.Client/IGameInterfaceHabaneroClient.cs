@@ -34,8 +34,16 @@ public interface IGameInterfaceHabaneroClient
         string transactionId,
         CancellationToken cancellationToken = default);
 
-    ValueTask<GameTokenReply> GameTokenAsync(
+    IAsyncEnumerable<GameHistorySettled> GameHistorySettledAsync(
         Uri apiUrl,
+        string brandId,
+        string apiKey,
+        DateTime startTime,
+        DateTime endTime,
+        CancellationToken cancellationToken = default);
+
+    ValueTask<GameTokenReply> GameTokenAsync(
+            Uri apiUrl,
         string brandId,
         string apiKey,
         string playerHostAddress,
@@ -45,14 +53,6 @@ public interface IGameInterfaceHabaneroClient
         string currencyCode,
         string? firstName,
         string? lastName,
-        CancellationToken cancellationToken = default);
-
-    IAsyncEnumerable<GameHistorySettled> GameHistorySettledAsync(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        DateTime startTime,
-        DateTime endTime,
         CancellationToken cancellationToken = default);
 
     ValueTask<PlayerBalanceReply> PlayerBalanceAsync(

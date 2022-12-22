@@ -9,7 +9,7 @@ public class QueryPlayerUnitTest
 {
     [TestMethod]
     public async Task Normal_Process()
-    {        
+    {
         var apiUrl = new Uri("https://ws-test.insvr.com/jsonapi/QueryPlayer");
 
         var response =
@@ -48,6 +48,6 @@ public class QueryPlayerUnitTest
 
         Assert.IsNotNull(actual);
         Assert.IsTrue(actual.IsPlayerExist);
-        Assert.AreEqual(50.0000M, actual.Balance);        
+        Assert.AreEqual(50.0000M, actual.Balance);
     }
 }

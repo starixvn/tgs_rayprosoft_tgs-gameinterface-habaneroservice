@@ -3,6 +3,7 @@ using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
 
 namespace Tgs.GameInterface.HabaneroService.Client;
+
 internal class LoggingInterceptor : Interceptor
 {
     private readonly ILogger<LoggingInterceptor> _logger;
