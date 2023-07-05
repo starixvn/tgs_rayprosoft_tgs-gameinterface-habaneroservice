@@ -38,12 +38,8 @@ internal class GameApiClient : IGameApiClient
             url,
             request,
             "DepositPlayerMoney",
-            cancellationToken).ConfigureAwait(false);
-
-        if (document is null)
-        {
-            throw new Exception("Document is empty.");
-        }
+            cancellationToken).ConfigureAwait(false)
+            ?? throw new Exception("Document is empty.");
 
         if (!document.RootElement.TryGetProperty("Success", out var jsonSuccess))
         {
@@ -87,12 +83,8 @@ internal class GameApiClient : IGameApiClient
             url,
             request,
             "GetBrandCompletedGameResultsV2",
-            cancellationToken).ConfigureAwait(false);
-
-        if (document is null)
-        {
-            throw new Exception("Document is empty.");
-        }
+            cancellationToken).ConfigureAwait(false)
+            ?? throw new Exception("Document is empty.");
 
         var results = JsonSerializer.Deserialize<IEnumerable<GetBrandCompletedGameResultsV2Result>>(document)
             ?? Enumerable.Empty<GetBrandCompletedGameResultsV2Result>();
@@ -140,12 +132,8 @@ internal class GameApiClient : IGameApiClient
             url,
             request,
             "LoginOrCreatePlayer",
-            cancellationToken).ConfigureAwait(false);
-
-        if (document is null)
-        {
-            throw new Exception("Document is empty.");
-        }
+            cancellationToken).ConfigureAwait(false)
+            ?? throw new Exception("Document is empty.");
 
         if (!document.RootElement.TryGetProperty("Token", out var jsonToken))
         {
@@ -172,12 +160,8 @@ internal class GameApiClient : IGameApiClient
             url,
             request,
             "LogOutPlayer",
-            cancellationToken).ConfigureAwait(false);
-
-        if (document is null)
-        {
-            throw new Exception("Document is empty.");
-        }
+            cancellationToken).ConfigureAwait(false)
+            ?? throw new Exception("Document is empty.");
 
         if (!document.RootElement.TryGetProperty("Success", out var jsonSuccess))
         {
@@ -204,12 +188,8 @@ internal class GameApiClient : IGameApiClient
             url,
             request,
             "QueryPlayer",
-            cancellationToken).ConfigureAwait(false);
-
-        if (document is null)
-        {
-            throw new Exception("Document is empty.");
-        }
+            cancellationToken).ConfigureAwait(false)
+            ?? throw new Exception("Document is empty.");
 
         if (!document.RootElement.TryGetProperty("Found", out var jsonFound))
         {
@@ -249,12 +229,8 @@ internal class GameApiClient : IGameApiClient
             url,
             request,
             "QueryTransfer",
-            cancellationToken).ConfigureAwait(false);
-
-        if (document is null)
-        {
-            throw new Exception("Document is empty.");
-        }
+            cancellationToken).ConfigureAwait(false)
+            ?? throw new Exception("Document is empty.");
 
         if (!document.RootElement.TryGetProperty("Success", out var jsonSuccess))
         {
@@ -285,12 +261,8 @@ internal class GameApiClient : IGameApiClient
             url,
             request,
             "WithdrawPlayerMoney",
-            cancellationToken).ConfigureAwait(false);
-
-        if (document is null)
-        {
-            throw new Exception("Document is empty.");
-        }
+            cancellationToken).ConfigureAwait(false)
+            ?? throw new Exception("Document is empty.");
 
         if (!document.RootElement.TryGetProperty("Success", out var jsonSuccess))
         {
@@ -330,7 +302,10 @@ internal class GameApiClient : IGameApiClient
 
         using (var sr = new StreamReader(httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken).Result))
         {
-            responseMessage = await sr.ReadToEndAsync().ConfigureAwait(false) ?? string.Empty;
+            responseMessage = await sr
+                .ReadToEndAsync(
+                cancellationToken: cancellationToken)
+                .ConfigureAwait(false) ?? string.Empty;
         }
 
         var apiLogEvent = new GameApiLogEvent

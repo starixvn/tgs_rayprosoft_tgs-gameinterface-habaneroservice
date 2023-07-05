@@ -5,18 +5,11 @@ VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.HabaneroService.Core", "Tgs.GameInterface.HabaneroService.Core\Tgs.GameInterface.HabaneroService.Core.csproj", "{8EA9D56D-09CD-435B-B9EE-6B820F4B1B7E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{32A6321C-1223-424E-AB3E-875E58496D62}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		CodeMaid.config = CodeMaid.config
-		nuget.config = nuget.config
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.HabaneroService.Core.UnitTest", "Tgs.GameInterface.HabaneroService.Core.UnitTest\Tgs.GameInterface.HabaneroService.Core.UnitTest.csproj", "{B54740EF-5FFE-4E5A-8B8E-01B21B3BD3A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameInterface.HabaneroService.Core.UnitTest", "Tgs.GameInterface.HabaneroService.Core.UnitTest\Tgs.GameInterface.HabaneroService.Core.UnitTest.csproj", "{B54740EF-5FFE-4E5A-8B8E-01B21B3BD3A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.HabaneroService", "Tgs.GameInterface.HabaneroService\Tgs.GameInterface.HabaneroService.csproj", "{3039B95A-2795-425F-946E-97047F0064F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameInterface.HabaneroService", "Tgs.GameInterface.HabaneroService\Tgs.GameInterface.HabaneroService.csproj", "{3039B95A-2795-425F-946E-97047F0064F3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameInterface.HabaneroService.Client", "Tgs.GameInterface.HabaneroService.Client\Tgs.GameInterface.HabaneroService.Client.csproj", "{C9B3B428-F175-45B0-A426-FD6F938F6A1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.HabaneroService.Client", "Tgs.GameInterface.HabaneroService.Client\Tgs.GameInterface.HabaneroService.Client.csproj", "{C9B3B428-F175-45B0-A426-FD6F938F6A1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

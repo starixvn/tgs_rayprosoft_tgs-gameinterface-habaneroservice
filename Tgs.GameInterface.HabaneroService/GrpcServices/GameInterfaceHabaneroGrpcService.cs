@@ -13,10 +13,12 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
     private readonly IGetService<FundStatusQuery, bool> _fundStatusService;
     private readonly IQueryService<GameHistorySettledQuery, GameHistorySettledResult> _gameHistorySettledService;
     private readonly IGetService<GetTokenQuery, GetTokenResult> _getTokenService;
+    private readonly ILogger<GameInterfaceHabaneroGrpcService> _logger;
     private readonly IGetService<PlayerBalanceQuery, PlayerBalanceResult> _playerBalanceService;
     private readonly ICommandService<PlayerCreateCommand> _playerCreateService;
 
     public GameInterfaceHabaneroGrpcService(
+        ILogger<GameInterfaceHabaneroGrpcService> logger,
         IGetService<FundInQuery, FundResult> fundInService,
         IGetService<FundOutQuery, FundResult> fundOutService,
         IGetService<FundStatusQuery, bool> fundStatusService,
@@ -25,6 +27,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
         IGetService<GetTokenQuery, GetTokenResult> getTokenService,
         IQueryService<GameHistorySettledQuery, GameHistorySettledResult> gameHistorySettledService)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fundInService = fundInService ?? throw new ArgumentNullException(nameof(fundInService));
         _fundOutService = fundOutService ?? throw new ArgumentNullException(nameof(fundOutService));
         _fundStatusService = fundStatusService ?? throw new ArgumentNullException(nameof(fundStatusService));
@@ -32,6 +35,16 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
         _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
         _getTokenService = getTokenService ?? throw new ArgumentNullException(nameof(getTokenService));
         _gameHistorySettledService = gameHistorySettledService ?? throw new ArgumentNullException(nameof(gameHistorySettledService));
+    }
+
+    public override Task<CheckingServiceReply> CheckingService(CheckingServiceRequest request, ServerCallContext context)
+    {
+        _logger.LogWarning("LogOn:{logOn} Message: Create a check connection.({machineName})", DateTime.Now.ToString("o"), request.MachineName);
+
+        return Task.FromResult(new CheckingServiceReply
+        {
+            MachineName = Environment.MachineName
+        });
     }
 
     public override async Task<FundReply> FundIn(FundRequest request, ServerCallContext context)

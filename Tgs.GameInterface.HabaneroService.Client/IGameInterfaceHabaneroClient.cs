@@ -4,6 +4,10 @@ namespace Tgs.GameInterface.HabaneroService.Client;
 
 public interface IGameInterfaceHabaneroClient
 {
+    ValueTask<string> CheckingServiceAsync(
+        string machineName,
+        CancellationToken cancellationToken = default);
+
     ValueTask<FundReply> FundInAsync(
         Uri apiUrl,
         string brandId,
