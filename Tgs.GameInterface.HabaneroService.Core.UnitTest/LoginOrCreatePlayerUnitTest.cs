@@ -55,6 +55,6 @@ public class LoginOrCreatePlayerUnitTest
             .ConfigureAwait(false);
 
         Assert.IsNotNull(actual);
-        Assert.IsFalse(string.IsNullOrEmpty(actual.Token));
+        Assert.IsFalse(string.IsNullOrEmpty(actual));
     }
 }

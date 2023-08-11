@@ -23,8 +23,8 @@ public interface IGameApiClient
         DateTime dtEndUTC,
         CancellationToken cancellationToken = default);
 
-    ValueTask<LoginOrCreatePlayerResult> LoginOrCreatePlayerAsync(
-                Uri apiUrl,
+    ValueTask<string> LoginOrCreatePlayerAsync(
+        Uri apiUrl,
         string brandId,
         string apiKey,
         string username,

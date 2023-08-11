@@ -120,7 +120,8 @@ message GameHistorySettled {
 	phoenix.protobuf.DecimalValue valid_bet = 8;
 	phoenix.protobuf.DecimalValue player_win_loss = 9;
 	phoenix.protobuf.DecimalValue turnover = 10;
-	phoenix.protobuf.DecimalValue settle = 11;    
+	phoenix.protobuf.DecimalValue settle = 11;
+	string additional_data = 12;
 }
 
 message GameTokenReply {

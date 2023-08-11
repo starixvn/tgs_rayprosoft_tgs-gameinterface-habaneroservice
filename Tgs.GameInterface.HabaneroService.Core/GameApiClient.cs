@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Tgs.GameInterface.HabaneroService.Core.Models;
 
@@ -34,30 +35,20 @@ internal class GameApiClient : IGameApiClient
         };
 
         var url = new Uri(apiUrl, "/jsonapi/DepositPlayerMoney");
-        var document = await PostAsync(
+        var jsonNode = await PostAsync(
             url,
             request,
             "DepositPlayerMoney",
             cancellationToken).ConfigureAwait(false)
             ?? throw new Exception("Document is empty.");
 
-        if (!document.RootElement.TryGetProperty("Success", out var jsonSuccess))
+        if (jsonNode["Success"]!.GetValue<bool>() is false)
         {
-            throw new Exception($"JsonElement parsing failed.({JsonSerializer.Serialize(document)})");
+            throw new Exception($"DepositPlayerMoney failed.({JsonSerializer.Serialize(jsonNode)})");
         }
 
-        var success = jsonSuccess.GetBoolean();
-
-        if (success is false)
-        {
-            throw new Exception($"DepositPlayerMoney failed.({JsonSerializer.Serialize(document)})");
-        }
-
-        var jsonTransactionId = document.RootElement.GetProperty("TransactionId");
-        var jsonRealBalance = document.RootElement.GetProperty("RealBalance");
-
-        var transactionId = jsonTransactionId.ToString();
-        var realBalance = jsonRealBalance.GetDecimal();
+        var transactionId = jsonNode["TransactionId"]!.GetValue<string>();
+        var realBalance = jsonNode["RealBalance"]!.GetValue<decimal>();
 
         return new DepositPlayerMoneyResult(transactionId, realBalance);
     }
@@ -79,15 +70,14 @@ internal class GameApiClient : IGameApiClient
         };
 
         var url = new Uri(apiUrl, "/jsonapi/GetBrandCompletedGameResultsV2");
-        var document = await PostAsync(
+        var jsonNode = await PostAsync(
             url,
             request,
             "GetBrandCompletedGameResultsV2",
             cancellationToken).ConfigureAwait(false)
             ?? throw new Exception("Document is empty.");
 
-        var results = JsonSerializer.Deserialize<IEnumerable<GetBrandCompletedGameResultsV2Result>>(document)
-            ?? Enumerable.Empty<GetBrandCompletedGameResultsV2Result>();
+        var results = jsonNode.AsArray();
 
         if (!results.Any())
         {
@@ -96,11 +86,25 @@ internal class GameApiClient : IGameApiClient
 
         foreach (var result in results)
         {
-            yield return result;
+            if (result is null)
+            {
+                continue;
+            }
+
+            yield return new GetBrandCompletedGameResultsV2Result(
+                PlayerCode: result["Username"]!.ToString(),
+                ExternalRoundId: result["FriendlyGameInstanceId"]!.ToString(),
+                ExternalGameId: result["GameKeyName"]!.ToString(),
+                GameStateId: result["GameStateId"]!.GetValue<int>(),
+                ExternalCreatedOn: result["DtStarted"]!.GetValue<DateTimeOffset>(),
+                ExternalClosedOn: result["DtCompleted"]!.GetValue<DateTimeOffset>(),
+                Bet: result["Stake"]!.GetValue<decimal>(),
+                Settle: result["Payout"]!.GetValue<decimal>(),
+                AdditionalData: result.ToJsonString());
         }
     }
 
-    public async ValueTask<LoginOrCreatePlayerResult> LoginOrCreatePlayerAsync(
+    public async ValueTask<string> LoginOrCreatePlayerAsync(
         Uri apiUrl,
         string brandId,
         string apiKey,
@@ -128,21 +132,14 @@ internal class GameApiClient : IGameApiClient
         };
 
         var url = new Uri(apiUrl, "/jsonapi/loginorcreateplayer");
-        var document = await PostAsync(
+        var jsonNode = await PostAsync(
             url,
             request,
             "LoginOrCreatePlayer",
             cancellationToken).ConfigureAwait(false)
             ?? throw new Exception("Document is empty.");
 
-        if (!document.RootElement.TryGetProperty("Token", out var jsonToken))
-        {
-            throw new Exception($"JsonElement parsing failed.({JsonSerializer.Serialize(document)})");
-        }
-
-        var token = jsonToken.ToString();
-
-        return new LoginOrCreatePlayerResult(token);
+        return jsonNode["Token"]!.GetValue<string>();
     }
 
     public async ValueTask<bool> LogOutPlayerAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, CancellationToken cancellationToken = default)
@@ -156,21 +153,14 @@ internal class GameApiClient : IGameApiClient
         };
 
         var url = new Uri(apiUrl, "/jsonapi/logoutplayer");
-        var document = await PostAsync(
+        var jsonNode = await PostAsync(
             url,
             request,
             "LogOutPlayer",
             cancellationToken).ConfigureAwait(false)
             ?? throw new Exception("Document is empty.");
 
-        if (!document.RootElement.TryGetProperty("Success", out var jsonSuccess))
-        {
-            throw new Exception($"JsonElement parsing failed.({JsonSerializer.Serialize(document)})");
-        }
-
-        var success = jsonSuccess.GetBoolean();
-
-        return success;
+        return jsonNode["Success"]!.GetValue<bool>();
     }
 
     public async ValueTask<QueryPlayerResult> QueryPlayerAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, CancellationToken cancellationToken = default)
@@ -184,34 +174,20 @@ internal class GameApiClient : IGameApiClient
         };
 
         var url = new Uri(apiUrl, "/jsonapi/QueryPlayer");
-        var document = await PostAsync(
+        var jsonNode = await PostAsync(
             url,
             request,
             "QueryPlayer",
             cancellationToken).ConfigureAwait(false)
             ?? throw new Exception("Document is empty.");
 
-        if (!document.RootElement.TryGetProperty("Found", out var jsonFound))
-        {
-            throw new Exception($"JsonElement parsing failed.({JsonSerializer.Serialize(document)})");
-        }
-
-        var found = jsonFound.GetBoolean();
-
-        if (!found)
-        {
-            return new QueryPlayerResult(
-                        IsPlayerExist: found,
-                        Balance: 0);
-        }
-
-        var jsonRealBalance = document.RootElement.GetProperty("RealBalance");
-
-        var realBalance = jsonRealBalance.GetDecimal();
-
-        return new QueryPlayerResult(
-            IsPlayerExist: found,
-            Balance: realBalance);
+        return !jsonNode["Found"]!.GetValue<bool>()
+            ? new QueryPlayerResult(
+                IsPlayerExist: false,
+                Balance: 0)
+            : new QueryPlayerResult(
+                IsPlayerExist: true,
+                Balance: jsonNode["RealBalance"]!.GetValue<decimal>());
     }
 
     public async ValueTask<bool> QueryTransferAsync(Uri apiUrl, string brandId, string apiKey, string username, string requestId, CancellationToken cancellationToken = default)
@@ -225,21 +201,14 @@ internal class GameApiClient : IGameApiClient
         };
 
         var url = new Uri(apiUrl, "/jsonapi/QueryTransfer");
-        var document = await PostAsync(
+        var jsonNode = await PostAsync(
             url,
             request,
             "QueryTransfer",
             cancellationToken).ConfigureAwait(false)
             ?? throw new Exception("Document is empty.");
 
-        if (!document.RootElement.TryGetProperty("Success", out var jsonSuccess))
-        {
-            throw new Exception($"JsonElement parsing failed.({JsonSerializer.Serialize(document)})");
-        }
-
-        var success = jsonSuccess.GetBoolean();
-
-        return success;
+        return jsonNode["Success"]!.GetValue<bool>();
     }
 
     public async ValueTask<WithdrawPlayerMoneyResult> WithdrawPlayerMoneyAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, string currencyCode, decimal amount, string requestId, CancellationToken cancellationToken = default)
@@ -257,35 +226,25 @@ internal class GameApiClient : IGameApiClient
         };
 
         var url = new Uri(apiUrl, "/jsonapi/WithdrawPlayerMoney");
-        var document = await PostAsync(
+        var jsonNode = await PostAsync(
             url,
             request,
             "WithdrawPlayerMoney",
             cancellationToken).ConfigureAwait(false)
             ?? throw new Exception("Document is empty.");
 
-        if (!document.RootElement.TryGetProperty("Success", out var jsonSuccess))
+        if (jsonNode["Success"]!.GetValue<bool>() is false)
         {
-            throw new Exception($"JsonElement parsing failed.({JsonSerializer.Serialize(document)})");
+            throw new Exception($"WithdrawPlayerMoney failed.({JsonSerializer.Serialize(jsonNode)})");
         }
 
-        var success = jsonSuccess.GetBoolean();
-
-        if (success is false)
-        {
-            throw new Exception($"WithdrawPlayerMoney failed.({JsonSerializer.Serialize(document)})");
-        }
-
-        var jsonTransactionId = document.RootElement.GetProperty("TransactionId");
-        var jsonRealBalance = document.RootElement.GetProperty("RealBalance");
-
-        var transactionId = jsonTransactionId.ToString();
-        var realBalance = jsonRealBalance.GetDecimal();
+        var transactionId = jsonNode["TransactionId"]!.GetValue<string>();
+        var realBalance = jsonNode["RealBalance"]!.GetValue<decimal>();
 
         return new WithdrawPlayerMoneyResult(transactionId, realBalance);
     }
 
-    private async ValueTask<JsonDocument> PostAsync(Uri apiUrl, object request, string logPrefix, CancellationToken cancellationToken = default)
+    private async ValueTask<JsonNode> PostAsync(Uri apiUrl, object request, string logPrefix, CancellationToken cancellationToken = default)
     {
         logPrefix = $"{nameof(GameApiClient)}.{logPrefix}".ToLower();
 
@@ -327,6 +286,6 @@ internal class GameApiClient : IGameApiClient
 
         _ = httpResponseMessage.EnsureSuccessStatusCode();
 
-        return JsonDocument.Parse(responseMessage);
+        return JsonNode.Parse(responseMessage)!;
     }
 }

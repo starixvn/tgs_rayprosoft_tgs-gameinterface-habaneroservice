@@ -189,7 +189,8 @@ public class HabaneroController : ControllerBase
                 ValidBet: gameRecord.ValidBet,
                 PlayerWinLoss: gameRecord.PlayerWinLoss,
                 Turnover: gameRecord.Turnover,
-                Settle: gameRecord.Settle);
+                Settle: gameRecord.Settle,
+                AdditionalData: gameRecord.AdditionalData);
         }
     }
 

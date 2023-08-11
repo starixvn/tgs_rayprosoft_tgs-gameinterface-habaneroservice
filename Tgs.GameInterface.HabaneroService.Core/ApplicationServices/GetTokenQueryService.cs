@@ -13,7 +13,7 @@ internal class GetTokenQueryService : IGetService<GetTokenQuery, GetTokenResult>
 
     public async ValueTask<GetTokenResult> GetAsync(GetTokenQuery query, CancellationToken cancellationToken = default)
     {
-        var result = await _client.LoginOrCreatePlayerAsync(
+        var token = await _client.LoginOrCreatePlayerAsync(
            apiUrl: query.ApiUrl,
            brandId: query.BrandId,
            apiKey: query.ApiKey,
@@ -26,6 +26,6 @@ internal class GetTokenQueryService : IGetService<GetTokenQuery, GetTokenResult>
            lastName: query.LastName,
            cancellationToken).ConfigureAwait(false);
 
-        return new GetTokenResult(result.Token);
+        return new GetTokenResult(token);
     }
 }

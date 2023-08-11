@@ -33,20 +33,21 @@ internal class GameHistorySettledQueryService : IQueryService<GameHistorySettled
 
         foreach (var bettingHistoryBet in bettingHistoryBets)
         {
-            decimal playerWinLoss = bettingHistoryBet.Payout - bettingHistoryBet.Stake;
+            decimal playerWinLoss = bettingHistoryBet.Settle - bettingHistoryBet.Bet;
 
             yield return new GameHistorySettledResult(
-                PlayerCode: bettingHistoryBet.Username,
-                ExternalRoundId: bettingHistoryBet.FriendlyGameInstanceId.ToString(),
-                ExternalGameId: bettingHistoryBet.GameKeyName,
+                PlayerCode: bettingHistoryBet.PlayerCode,
+                ExternalRoundId: bettingHistoryBet.ExternalRoundId.ToString(),
+                ExternalGameId: bettingHistoryBet.ExternalGameId,
                 GameStateId: bettingHistoryBet.GameStateId,
-                ExternalCreatedOn: bettingHistoryBet.DtStarted,
-                ExternalClosedOn: bettingHistoryBet.DtCompleted,
-                Bet: bettingHistoryBet.Stake,
-                ValidBet: bettingHistoryBet.Stake,
+                ExternalCreatedOn: bettingHistoryBet.ExternalCreatedOn,
+                ExternalClosedOn: bettingHistoryBet.ExternalClosedOn,
+                Bet: bettingHistoryBet.Bet,
+                ValidBet: bettingHistoryBet.Bet,
                 PlayerWinLoss: playerWinLoss,
-                Turnover: bettingHistoryBet.Stake,
-                Settle: bettingHistoryBet.Payout);
+                Turnover: bettingHistoryBet.Bet,
+                Settle: bettingHistoryBet.Settle,
+                AdditionalData: bettingHistoryBet.AdditionalData);
         }
     }
 }

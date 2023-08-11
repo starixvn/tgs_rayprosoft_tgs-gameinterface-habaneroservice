@@ -11,4 +11,5 @@ public record GameHistorySettledResultViewModel(
     decimal ValidBet,
     decimal PlayerWinLoss,
     decimal Turnover,
-    decimal Settle);
+    decimal Settle,
+    string AdditionalData);
