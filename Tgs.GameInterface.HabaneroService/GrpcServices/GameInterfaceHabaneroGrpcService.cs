@@ -143,7 +143,8 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
                     ValidBet = gameHistorySettled.ValidBet,
                     PlayerWinLoss = gameHistorySettled.PlayerWinLoss,
                     Turnover = gameHistorySettled.Turnover,
-                    Settle = gameHistorySettled.Settle
+                    Settle = gameHistorySettled.Settle,
+                    AdditionalData=gameHistorySettled.AdditionalData
                 });
             }
         }
