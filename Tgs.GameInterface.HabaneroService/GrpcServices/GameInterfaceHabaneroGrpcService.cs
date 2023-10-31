@@ -144,7 +144,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
                     PlayerWinLoss = gameHistorySettled.PlayerWinLoss,
                     Turnover = gameHistorySettled.Turnover,
                     Settle = gameHistorySettled.Settle,
-                    AdditionalData=gameHistorySettled.AdditionalData
+                    AdditionalData = gameHistorySettled.AdditionalData
                 });
             }
         }
