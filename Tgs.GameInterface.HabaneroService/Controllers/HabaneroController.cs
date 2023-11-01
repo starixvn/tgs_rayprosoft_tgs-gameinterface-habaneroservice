@@ -241,37 +241,6 @@ public class HabaneroController : ControllerBase
     }
 
     /// <summary>
-    /// Kicks the player asynchronous.
-    /// </summary>
-    /// <param name="service">The service.</param>
-    /// <param name="model">The model.</param>
-    /// <returns></returns>
-    /// <returns></returns>
-    /// <remarks>
-    /// <b>Example</b><br />
-    ///
-    ///     Post
-    ///
-    ///         {
-    ///             "apiUrl": "https://ws-test.insvr.com",
-    ///             "brandId": "b97e1834-d142-ed11-a27c-0050f23876f7",
-    ///             "apiKey": "0F0B9E83-80FF-4DC7-8C8C-DF48B55DAE45",
-    ///             "username": "4ucmqplxb029",
-    ///             "password": "HabaTfP@ssw0rd"
-    ///         }
-    /// </remarks>
-    [HttpPost("kick")]
-    public ValueTask<bool> KickPlayerAsync(
-            [FromServices] IGetService<LogoutCommand, bool> service,
-            KickPlayerViewModel model)
-        => service.GetAsync(new LogoutCommand(
-            model.ApiUrl,
-            model.BrandId,
-            model.ApiKey,
-            model.Username,
-            model.Password));
-
-    /// <summary>
     /// Players the balance asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
@@ -354,4 +323,34 @@ public class HabaneroController : ControllerBase
                 command: command,
                 cancellationToken: HttpContext.RequestAborted);
     }
+
+    /// <summary>
+    /// Players the logout asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="model">The model.</param>
+    /// <returns></returns>
+    /// <remarks>
+    /// <b>Example</b><br />
+    ///
+    ///     Post
+    ///
+    ///         {
+    ///             "apiUrl": "https://ws-test.insvr.com",
+    ///             "brandId": "b97e1834-d142-ed11-a27c-0050f23876f7",
+    ///             "apiKey": "0F0B9E83-80FF-4DC7-8C8C-DF48B55DAE45",
+    ///             "username": "4ucmqplxb029",
+    ///             "password": "HabaTfP@ssw0rd"
+    ///         }
+    /// </remarks>
+    [HttpPost("player/logout")]
+    public ValueTask PlayerLogoutAsync(
+        [FromServices] ICommandService<PlayerLogoutCommand> service,
+        KickPlayerViewModel model)
+        => service.ExecuteAsync(new PlayerLogoutCommand(
+            model.ApiUrl,
+            model.BrandId,
+            model.ApiKey,
+            model.Username,
+            model.Password));
 }

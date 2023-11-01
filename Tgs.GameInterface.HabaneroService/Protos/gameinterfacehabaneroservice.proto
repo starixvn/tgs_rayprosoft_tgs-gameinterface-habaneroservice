@@ -12,6 +12,7 @@ service  GameInterfaceHabaneroService{
   // Sends a greeting
   rpc PlayerCreate (PlayerCreateRequest) returns (BaseReply);
   rpc PlayerBalance (PlayerBalanceRequest) returns (PlayerBalanceReply);  
+  rpc PlayerLogout (PlayerLogoutRequest) returns (BaseReply);
   rpc FundIn (FundRequest) returns (FundReply);
   rpc FundOut (FundRequest) returns (FundReply);
   rpc FundStatus(FundStatusRequest) returns (FundStatusReply);
@@ -41,6 +42,14 @@ message FundStatusRequest {
 }
 
 message PlayerBalanceRequest {
+	string api_url = 1;
+	string brand_id = 2;
+	string api_key = 3;
+	string username = 4;
+	string password = 5;
+}
+
+message PlayerLogoutRequest {
 	string api_url = 1;
 	string brand_id = 2;
 	string api_key = 3;

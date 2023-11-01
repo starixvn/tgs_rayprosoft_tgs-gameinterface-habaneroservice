@@ -1,6 +1,6 @@
 ﻿namespace Tgs.GameInterface.HabaneroService.Core.ApplicationServices;
 
-public record LogoutCommand(
+public record PlayerLogoutCommand(
     Uri ApiUrl,
     string BrandId,
     string ApiKey,

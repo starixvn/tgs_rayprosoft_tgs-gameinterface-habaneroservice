@@ -27,14 +27,13 @@ public class LogOutPlayerUnitTest
         var fakeLog = NullLogger<GameApiClient>.Instance;
 
         var sut = new GameApiClient(fakeHttpClient, fakeLog);
-        var actual = await sut.LogOutPlayerAsync(
-                apiUrl: apiUrl,
-                brandId: "b97e1834-d142-ed11-a27c-0050f23876f7",
-                apiKey: "0F0B9E83-80FF-4DC7-8C8C-DF48B55DAE45",
-                username: "4ucmqplxb029",
-                password: "HabaTfP@ssw0rd")
-            .ConfigureAwait(false);
 
-        Assert.IsTrue(actual);
+        await sut.LogOutPlayerAsync(
+            apiUrl: apiUrl,
+            brandId: "b97e1834-d142-ed11-a27c-0050f23876f7",
+            apiKey: "0F0B9E83-80FF-4DC7-8C8C-DF48B55DAE45",
+            username: "4ucmqplxb029",
+            password: "HabaTfP@ssw0rd")
+           .ConfigureAwait(false);
     }
 }

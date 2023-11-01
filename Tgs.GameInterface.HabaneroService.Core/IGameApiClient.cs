@@ -36,7 +36,7 @@ public interface IGameApiClient
         string? lastName,
         CancellationToken cancellationToken = default);
 
-    ValueTask<bool> LogOutPlayerAsync(
+    ValueTask LogOutPlayerAsync(
         Uri apiUrl,
         string brandId,
         string apiKey,

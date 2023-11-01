@@ -142,7 +142,7 @@ internal class GameApiClient : IGameApiClient
         return jsonNode["Token"]!.GetValue<string>();
     }
 
-    public async ValueTask<bool> LogOutPlayerAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, CancellationToken cancellationToken = default)
+    public async ValueTask LogOutPlayerAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, CancellationToken cancellationToken = default)
     {
         var request = new LogOutPlayerRequest
         {
@@ -160,7 +160,10 @@ internal class GameApiClient : IGameApiClient
             cancellationToken).ConfigureAwait(false)
             ?? throw new Exception("Document is empty.");
 
-        return jsonNode["Success"]!.GetValue<bool>();
+        if (!jsonNode["Success"]!.GetValue<bool>())
+        {
+            throw new Exception("Player failed to log out.");
+        }
     }
 
     public async ValueTask<QueryPlayerResult> QueryPlayerAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, CancellationToken cancellationToken = default)

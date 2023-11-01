@@ -16,6 +16,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
     private readonly ILogger<GameInterfaceHabaneroGrpcService> _logger;
     private readonly IGetService<PlayerBalanceQuery, PlayerBalanceResult> _playerBalanceService;
     private readonly ICommandService<PlayerCreateCommand> _playerCreateService;
+    private readonly ICommandService<PlayerLogoutCommand> _playerLogoutService;
 
     public GameInterfaceHabaneroGrpcService(
         ILogger<GameInterfaceHabaneroGrpcService> logger,
@@ -25,7 +26,8 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
         ICommandService<PlayerCreateCommand> playerCreateService,
         IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
         IGetService<GetTokenQuery, GetTokenResult> getTokenService,
-        IQueryService<GameHistorySettledQuery, GameHistorySettledResult> gameHistorySettledService)
+        IQueryService<GameHistorySettledQuery, GameHistorySettledResult> gameHistorySettledService,
+         ICommandService<PlayerLogoutCommand> playerLogoutService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fundInService = fundInService ?? throw new ArgumentNullException(nameof(fundInService));
@@ -35,6 +37,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
         _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
         _getTokenService = getTokenService ?? throw new ArgumentNullException(nameof(getTokenService));
         _gameHistorySettledService = gameHistorySettledService ?? throw new ArgumentNullException(nameof(gameHistorySettledService));
+        _playerLogoutService = playerLogoutService ?? throw new ArgumentNullException(nameof(playerLogoutService));
     }
 
     public override Task<CheckingServiceReply> CheckingService(CheckingServiceRequest request, ServerCallContext context)
@@ -215,6 +218,26 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             .ConfigureAwait(false);
 
         return new BaseReply()
+        {
+            Status = true
+        };
+    }
+
+    public override async Task<BaseReply> PlayerLogout(PlayerLogoutRequest request, ServerCallContext context)
+    {
+        var command = new PlayerLogoutCommand(
+            new Uri(request.ApiUrl),
+            request.BrandId,
+            request.ApiKey,
+            request.Username,
+            request.Password);
+
+        await _playerLogoutService.ExecuteAsync(
+            command: command,
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
+
+        return new BaseReply
         {
             Status = true
         };

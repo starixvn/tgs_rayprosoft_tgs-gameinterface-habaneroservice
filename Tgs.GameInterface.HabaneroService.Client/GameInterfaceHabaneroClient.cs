@@ -31,16 +31,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
         return reply.MachineName;
     }
 
-    public async ValueTask<FundReply> FundInAsync(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        string username,
-        string password,
-        string currencyCode,
-        decimal amount,
-        string transactionId,
-        CancellationToken cancellationToken = default)
+    public async ValueTask<FundReply> FundInAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, string currencyCode, decimal amount, string transactionId, CancellationToken cancellationToken = default)
     {
         var request = new FundRequest
         {
@@ -59,16 +50,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             .ConfigureAwait(false);
     }
 
-    public async ValueTask<FundReply> FundOutAsync(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        string username,
-        string password,
-        string currencyCode,
-        decimal amount,
-        string transactionId,
-        CancellationToken cancellationToken = default)
+    public async ValueTask<FundReply> FundOutAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, string currencyCode, decimal amount, string transactionId, CancellationToken cancellationToken = default)
     {
         var request = new FundRequest
         {
@@ -87,13 +69,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             .ConfigureAwait(false);
     }
 
-    public async ValueTask<FundStatusReply> FundStatusAsync(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        string username,
-        string transactionId,
-        CancellationToken cancellationToken = default)
+    public async ValueTask<FundStatusReply> FundStatusAsync(Uri apiUrl, string brandId, string apiKey, string username, string transactionId, CancellationToken cancellationToken = default)
     {
         var request = new FundStatusRequest
         {
@@ -109,13 +85,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             .ConfigureAwait(false);
     }
 
-    public async IAsyncEnumerable<GameHistorySettled> GameHistorySettledAsync(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        DateTime startTime,
-        DateTime endTime,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<GameHistorySettled> GameHistorySettledAsync(Uri apiUrl, string brandId, string apiKey, DateTime startTime, DateTime endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var request = new GameHistorySettledRequest
         {
@@ -141,18 +111,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
         }
     }
 
-    public async ValueTask<GameTokenReply> GameTokenAsync(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        string playerHostAddress,
-        string useragent,
-        string username,
-        string password,
-        string currencyCode,
-        string? firstName,
-        string? lastName,
-        CancellationToken cancellationToken = default)
+    public async ValueTask<GameTokenReply> GameTokenAsync(Uri apiUrl, string brandId, string apiKey, string playerHostAddress, string useragent, string username, string password, string currencyCode, string? firstName, string? lastName, CancellationToken cancellationToken = default)
     {
         var request = new GameTokenRequest
         {
@@ -172,13 +131,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             .ConfigureAwait(false);
     }
 
-    public async ValueTask<PlayerBalanceReply> PlayerBalanceAsync(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        string username,
-        string password,
-        CancellationToken cancellationToken = default)
+    public async ValueTask<PlayerBalanceReply> PlayerBalanceAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, CancellationToken cancellationToken = default)
     {
         var request = new PlayerBalanceRequest
         {
@@ -193,18 +146,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             .ConfigureAwait(false);
     }
 
-    public async ValueTask PlayerCreateAsync(
-        Uri apiUrl,
-        string brandId,
-        string apiKey,
-        string playerHostAddress,
-        string useragent,
-        string username,
-        string password,
-        string currencyCode,
-        string? firstName,
-        string? lastName,
-        CancellationToken cancellationToken = default)
+    public async ValueTask PlayerCreateAsync(Uri apiUrl, string brandId, string apiKey, string playerHostAddress, string useragent, string username, string password, string currencyCode, string? firstName, string? lastName, CancellationToken cancellationToken = default)
     {
         var request = new PlayerCreateRequest
         {
@@ -221,6 +163,23 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
         };
         _ = await _client
             .PlayerCreateAsync(request, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask PlayerLogoutAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, CancellationToken cancellationToken = default)
+    {
+        var request = new PlayerLogoutRequest
+        {
+            ApiUrl = apiUrl.ToString(),
+            BrandId = brandId,
+            ApiKey = apiKey,
+            Username = username,
+            Password = password
+        };
+
+        _ = await _client.PlayerLogoutAsync(
+            request: request,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
 }
