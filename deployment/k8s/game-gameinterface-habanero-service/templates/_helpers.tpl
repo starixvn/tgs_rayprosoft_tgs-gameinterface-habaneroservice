@@ -47,7 +47,6 @@ Selector labels
 */}}
 {{- define "game-gameinterface-habanero-service.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "game-gameinterface-habanero-service.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
 app: {{ include "game-gameinterface-habanero-service.name" . }}
 tgs.kind: game
 tgs.game.kind: gameinterface

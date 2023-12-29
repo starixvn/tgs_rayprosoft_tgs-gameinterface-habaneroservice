@@ -171,7 +171,7 @@ public class HabaneroController : ControllerBase
             .ToArrayAsync(HttpContext.RequestAborted)
             .ConfigureAwait(false);
 
-        if (!gameRecords.Any())
+        if (gameRecords.Length == 0)
         {
             yield break;
         }

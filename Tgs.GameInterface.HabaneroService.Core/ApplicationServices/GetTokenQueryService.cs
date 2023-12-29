@@ -2,18 +2,11 @@
 
 namespace Tgs.GameInterface.HabaneroService.Core.ApplicationServices;
 
-internal class GetTokenQueryService : IGetService<GetTokenQuery, GetTokenResult>
+internal class GetTokenQueryService(IGameApiClient client) : IGetService<GetTokenQuery, GetTokenResult>
 {
-    private readonly IGameApiClient _client;
-
-    public GetTokenQueryService(IGameApiClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<GetTokenResult> GetAsync(GetTokenQuery query, CancellationToken cancellationToken = default)
     {
-        var token = await _client.LoginOrCreatePlayerAsync(
+        var token = await client.LoginOrCreatePlayerAsync(
            apiUrl: query.ApiUrl,
            brandId: query.BrandId,
            apiKey: query.ApiKey,

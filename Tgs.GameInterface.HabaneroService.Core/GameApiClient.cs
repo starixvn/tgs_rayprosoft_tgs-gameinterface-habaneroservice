@@ -8,19 +8,10 @@ using Tgs.GameInterface.HabaneroService.Core.Models;
 
 namespace Tgs.GameInterface.HabaneroService.Core;
 
-internal class GameApiClient : IGameApiClient
+internal class GameApiClient(
+    HttpClient client,
+    ILogger<GameApiClient> logger) : IGameApiClient
 {
-    private readonly HttpClient _client;
-    private readonly ILogger<GameApiClient> _logger;
-
-    public GameApiClient(
-        HttpClient client,
-        ILogger<GameApiClient> logger)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
     public async ValueTask<DepositPlayerMoneyResult> DepositPlayerMoneyAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, string currencyCode, decimal amount, string requestId, CancellationToken cancellationToken = default)
     {
         var request = new DepositPlayerMoneyRequest
@@ -79,7 +70,7 @@ internal class GameApiClient : IGameApiClient
 
         var results = jsonNode.AsArray();
 
-        if (!results.Any())
+        if (results.Count == 0)
         {
             yield break;
         }
@@ -256,7 +247,7 @@ internal class GameApiClient : IGameApiClient
         HttpContent content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8,
             "application/json");
 
-        var httpResponseMessage = await _client.PostAsync(apiUrl, content, cancellationToken);
+        var httpResponseMessage = await client.PostAsync(apiUrl, content, cancellationToken);
 
         sw.Stop();
 
@@ -285,7 +276,7 @@ internal class GameApiClient : IGameApiClient
             RecordedOn = DateTimeOffset.UtcNow
         };
 
-        _logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
+        logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
 
         _ = httpResponseMessage.EnsureSuccessStatusCode();
 

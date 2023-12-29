@@ -4,15 +4,9 @@ using Tgs.GameInterface.HabaneroService.Protos;
 
 namespace Tgs.GameInterface.HabaneroService.Client;
 
-internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
+internal class GameInterfaceHabaneroClient(
+    GameInterfaceHabaneroService.GameInterfaceHabaneroServiceClient client) : IGameInterfaceHabaneroClient
 {
-    private readonly GameInterfaceHabaneroService.GameInterfaceHabaneroServiceClient _client;
-
-    public GameInterfaceHabaneroClient(GameInterfaceHabaneroService.GameInterfaceHabaneroServiceClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<string> CheckingServiceAsync(
         string machineName,
         CancellationToken cancellationToken = default)
@@ -22,7 +16,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             MachineName = machineName,
         };
 
-        var reply = await _client
+        var reply = await client
             .CheckingServiceAsync(
                 request: request,
                 cancellationToken: cancellationToken)
@@ -45,7 +39,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             TransactionId = transactionId,
         };
 
-        return await _client
+        return await client
             .FundInAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -64,7 +58,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             TransactionId = transactionId,
         };
 
-        return await _client
+        return await client
             .FundOutAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -80,7 +74,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             TransactionId = transactionId,
         };
 
-        return await _client
+        return await client
             .FundStatusAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -96,11 +90,11 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             EndTime = endTime.ToTimestamp()
         };
 
-        var reply = await _client
+        var reply = await client
             .GameHistorySettledAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        if (!reply.Items.Any())
+        if (reply.Items.Count == 0)
         {
             yield break;
         }
@@ -126,7 +120,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             FirstName = firstName,
             LastName = lastName,
         };
-        return await _client
+        return await client
             .GameTokenAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -141,7 +135,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             Username = username,
             Password = password,
         };
-        return await _client
+        return await client
             .PlayerBalanceAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -161,7 +155,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             FirstName = firstName,
             LastName = lastName,
         };
-        _ = await _client
+        _ = await client
             .PlayerCreateAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -177,7 +171,7 @@ internal class GameInterfaceHabaneroClient : IGameInterfaceHabaneroClient
             Password = password
         };
 
-        _ = await _client.PlayerLogoutAsync(
+        _ = await client.PlayerLogoutAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);

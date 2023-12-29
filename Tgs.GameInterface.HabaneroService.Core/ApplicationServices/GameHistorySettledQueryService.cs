@@ -3,30 +3,22 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.HabaneroService.Core.ApplicationServices;
 
-internal class GameHistorySettledQueryService : IQueryService<GameHistorySettledQuery, GameHistorySettledResult>
+internal class GameHistorySettledQueryService(
+    IGameApiClient client) : IQueryService<GameHistorySettledQuery, GameHistorySettledResult>
 {
-    private readonly IGameApiClient _client;
-
-    public GameHistorySettledQueryService(
-        IGameApiClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async IAsyncEnumerable<GameHistorySettledResult> QueryAsync(GameHistorySettledQuery query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var bettingHistoryBets = await _client
-                .GetBrandCompletedGameResultsV2Async(
-                    apiUrl: query.ApiUrl,
-                    brandId: query.BrandId,
-                    apiKey: query.ApiKey,
-                    dtStartUTC: query.StartTime,
-                    dtEndUTC: query.EndTime,
-                    cancellationToken)
-                .ToArrayAsync(cancellationToken)
-                .ConfigureAwait(false);
+        var bettingHistoryBets = await client.GetBrandCompletedGameResultsV2Async(
+            apiUrl: query.ApiUrl,
+            brandId: query.BrandId,
+            apiKey: query.ApiKey,
+            dtStartUTC: query.StartTime,
+            dtEndUTC: query.EndTime,
+            cancellationToken)
+            .ToArrayAsync(cancellationToken)
+            .ConfigureAwait(false);
 
-        if (!bettingHistoryBets.Any())
+        if (bettingHistoryBets.Length == 0)
         {
             yield break;
         }

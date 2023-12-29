@@ -2,19 +2,12 @@
 
 namespace Tgs.GameInterface.HabaneroService.Core.ApplicationServices;
 
-internal class PlayerCreateCommandService : ICommandService<PlayerCreateCommand>
+internal class PlayerCreateCommandService(
+    IGameApiClient client) : ICommandService<PlayerCreateCommand>
 {
-    private readonly IGameApiClient _client;
-
-    public PlayerCreateCommandService(
-        IGameApiClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask ExecuteAsync(PlayerCreateCommand command, CancellationToken cancellationToken = default)
     {
-        _ = await _client.LoginOrCreatePlayerAsync(
+        _ = await client.LoginOrCreatePlayerAsync(
            apiUrl: command.ApiUrl,
            brandId: command.BrandId,
            apiKey: command.ApiKey,

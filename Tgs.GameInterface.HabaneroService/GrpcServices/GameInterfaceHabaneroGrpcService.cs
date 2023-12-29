@@ -6,43 +6,20 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.HabaneroService.GrpcServices;
 
-internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.GameInterfaceHabaneroServiceBase
+internal class GameInterfaceHabaneroGrpcService(
+    ILogger<GameInterfaceHabaneroGrpcService> logger,
+    IGetService<FundInQuery, FundResult> fundInService,
+    IGetService<FundOutQuery, FundResult> fundOutService,
+    IGetService<FundStatusQuery, bool> fundStatusService,
+    ICommandService<PlayerCreateCommand> playerCreateService,
+    IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
+    IGetService<GetTokenQuery, GetTokenResult> getTokenService,
+    IQueryService<GameHistorySettledQuery, GameHistorySettledResult> gameHistorySettledService,
+     ICommandService<PlayerLogoutCommand> playerLogoutService) : GameInterfaceHabaneroService.GameInterfaceHabaneroServiceBase
 {
-    private readonly IGetService<FundInQuery, FundResult> _fundInService;
-    private readonly IGetService<FundOutQuery, FundResult> _fundOutService;
-    private readonly IGetService<FundStatusQuery, bool> _fundStatusService;
-    private readonly IQueryService<GameHistorySettledQuery, GameHistorySettledResult> _gameHistorySettledService;
-    private readonly IGetService<GetTokenQuery, GetTokenResult> _getTokenService;
-    private readonly ILogger<GameInterfaceHabaneroGrpcService> _logger;
-    private readonly IGetService<PlayerBalanceQuery, PlayerBalanceResult> _playerBalanceService;
-    private readonly ICommandService<PlayerCreateCommand> _playerCreateService;
-    private readonly ICommandService<PlayerLogoutCommand> _playerLogoutService;
-
-    public GameInterfaceHabaneroGrpcService(
-        ILogger<GameInterfaceHabaneroGrpcService> logger,
-        IGetService<FundInQuery, FundResult> fundInService,
-        IGetService<FundOutQuery, FundResult> fundOutService,
-        IGetService<FundStatusQuery, bool> fundStatusService,
-        ICommandService<PlayerCreateCommand> playerCreateService,
-        IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
-        IGetService<GetTokenQuery, GetTokenResult> getTokenService,
-        IQueryService<GameHistorySettledQuery, GameHistorySettledResult> gameHistorySettledService,
-         ICommandService<PlayerLogoutCommand> playerLogoutService)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _fundInService = fundInService ?? throw new ArgumentNullException(nameof(fundInService));
-        _fundOutService = fundOutService ?? throw new ArgumentNullException(nameof(fundOutService));
-        _fundStatusService = fundStatusService ?? throw new ArgumentNullException(nameof(fundStatusService));
-        _playerCreateService = playerCreateService ?? throw new ArgumentNullException(nameof(playerCreateService));
-        _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
-        _getTokenService = getTokenService ?? throw new ArgumentNullException(nameof(getTokenService));
-        _gameHistorySettledService = gameHistorySettledService ?? throw new ArgumentNullException(nameof(gameHistorySettledService));
-        _playerLogoutService = playerLogoutService ?? throw new ArgumentNullException(nameof(playerLogoutService));
-    }
-
     public override Task<CheckingServiceReply> CheckingService(CheckingServiceRequest request, ServerCallContext context)
     {
-        _logger.LogWarning("LogOn:{logOn} Message: Create a check connection.({machineName})", DateTime.Now.ToString("o"), request.MachineName);
+        logger.LogWarning("LogOn:{logOn} Message: Create a check connection.({machineName})", DateTime.Now.ToString("o"), request.MachineName);
 
         return Task.FromResult(new CheckingServiceReply
         {
@@ -62,7 +39,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             Amount: request.Amount.ToDecimal().GetValueOrDefault(0),
             TransactionId: request.TransactionId);
 
-        var result = await _fundInService
+        var result = await fundInService
             .GetAsync(query, context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -85,7 +62,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             Amount: request.Amount.ToDecimal().GetValueOrDefault(0),
             TransactionId: request.TransactionId);
 
-        var result = await _fundOutService
+        var result = await fundOutService
             .GetAsync(query, context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -105,7 +82,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             Username: request.Username,
             TransactionId: request.TransactionId);
 
-        var result = await _fundStatusService
+        var result = await fundStatusService
             .GetAsync(query, context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -124,14 +101,14 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             StartTime: request.StartTime.ToDateTime(),
             EndTime: request.EndTime.ToDateTime());
 
-        var gameHistorySettleds = await _gameHistorySettledService
+        var gameHistorySettleds = await gameHistorySettledService
             .QueryAsync(query, context.CancellationToken)
             .ToArrayAsync(context.CancellationToken)
             .ConfigureAwait(false);
 
         var reply = new GameHistorySettledReply();
 
-        if (gameHistorySettleds.Any())
+        if (gameHistorySettleds.Length != 0)
         {
             foreach (var gameHistorySettled in gameHistorySettleds)
             {
@@ -169,7 +146,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             FirstName: request.FirstName,
             LastName: request.LastName);
 
-        var result = await _getTokenService
+        var result = await getTokenService
             .GetAsync(query, context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -188,7 +165,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             Username: request.Username,
             Password: request.Password);
 
-        var result = await _playerBalanceService
+        var result = await playerBalanceService
             .GetAsync(query, context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -213,7 +190,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             FirstName: request.FirstName,
             LastName: request.LastName);
 
-        await _playerCreateService
+        await playerCreateService
             .ExecuteAsync(command, context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -232,7 +209,7 @@ internal class GameInterfaceHabaneroGrpcService : GameInterfaceHabaneroService.G
             request.Username,
             request.Password);
 
-        await _playerLogoutService.ExecuteAsync(
+        await playerLogoutService.ExecuteAsync(
             command: command,
             cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);

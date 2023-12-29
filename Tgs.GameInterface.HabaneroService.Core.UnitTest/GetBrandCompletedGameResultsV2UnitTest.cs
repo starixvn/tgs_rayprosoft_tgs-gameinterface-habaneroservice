@@ -57,7 +57,7 @@ public class GetBrandCompletedGameResultsV2UnitTest
             .ConfigureAwait(false);
 
         Assert.IsNotNull(actual);
-        Assert.IsTrue(actual.Any());
+        Assert.IsTrue(actual.Length != 0);
         Assert.AreEqual("4ukop6pr8zj6", actual.First().PlayerCode);
         Assert.AreEqual("79003316977", actual.First().ExternalRoundId);
         Assert.AreEqual("SGMountMazuma", actual.First().ExternalGameId);
