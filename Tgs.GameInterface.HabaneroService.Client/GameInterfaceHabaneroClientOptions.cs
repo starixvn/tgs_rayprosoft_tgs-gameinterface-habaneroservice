@@ -2,5 +2,5 @@
 
 public class GameInterfaceHabaneroClientOptions
 {
-    public Uri BaseUrl { get; set; } = default!;
+	public Uri BaseUrl { get; set; } = default!;
 }
