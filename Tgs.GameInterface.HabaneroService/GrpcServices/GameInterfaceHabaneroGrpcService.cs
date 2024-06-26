@@ -46,7 +46,8 @@ internal class GameInterfaceHabaneroGrpcService(
 		return new FundReply()
 		{
 			TransactionId = result.TransactionId,
-			Balance = result.Balance
+			Balance = result.Balance,
+			Resp = result.Resp
 		};
 	}
 
@@ -69,7 +70,8 @@ internal class GameInterfaceHabaneroGrpcService(
 		return new FundReply()
 		{
 			TransactionId = result.TransactionId,
-			Balance = result.Balance
+			Balance = result.Balance,
+			Resp = result.Resp
 		};
 	}
 

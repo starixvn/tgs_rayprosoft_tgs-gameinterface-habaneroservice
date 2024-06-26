@@ -21,6 +21,7 @@ internal class FundInGetService(IGameApiClient client) : IGetService<FundInQuery
 
 		return new FundResult(
 			TransactionId: result.TransactionId,
-			Balance: result.Balance);
+			Balance: result.Balance,
+			Resp: result.Resp);
 	}
 }

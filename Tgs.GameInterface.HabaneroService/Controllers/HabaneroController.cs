@@ -52,7 +52,8 @@ public class HabaneroController : ControllerBase
 
 		return new FundResultViewModel(
 			TransactionId: result.TransactionId,
-			Balance: result.Balance);
+			Balance: result.Balance,
+			Resp: result.Resp);
 	}
 
 	/// <summary>
@@ -98,7 +99,8 @@ public class HabaneroController : ControllerBase
 
 		return new FundResultViewModel(
 			TransactionId: result.TransactionId,
-			Balance: result.Balance);
+			Balance: result.Balance,
+			Resp: result.Resp);
 	}
 
 	/// <summary>
