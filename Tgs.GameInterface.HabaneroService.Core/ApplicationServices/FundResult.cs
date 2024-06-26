@@ -2,4 +2,5 @@
 
 public record FundResult(
 	string TransactionId,
-	decimal Balance);
+	decimal Balance,
+	string Resp);

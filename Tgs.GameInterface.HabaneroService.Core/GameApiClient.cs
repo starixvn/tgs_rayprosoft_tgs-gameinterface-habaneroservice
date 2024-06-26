@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -27,10 +28,10 @@ internal class GameApiClient(
 
 		var url = new Uri(apiUrl, "/jsonapi/DepositPlayerMoney");
 		var jsonNode = await PostAsync(
-			url,
-			request,
-			"DepositPlayerMoney",
-			cancellationToken).ConfigureAwait(false)
+			apiUrl: url,
+			request: request,
+			logPrefix: nameof(DepositPlayerMoneyAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false)
 			?? throw new Exception("Document is empty.");
 
 		if (jsonNode["Success"]!.GetValue<bool>() is false)
@@ -41,16 +42,10 @@ internal class GameApiClient(
 		var transactionId = jsonNode["TransactionId"]!.GetValue<string>();
 		var realBalance = jsonNode["RealBalance"]!.GetValue<decimal>();
 
-		return new DepositPlayerMoneyResult(transactionId, realBalance);
+		return new DepositPlayerMoneyResult(transactionId, realBalance, jsonNode.ToJsonString());
 	}
 
-	public async IAsyncEnumerable<GetBrandCompletedGameResultsV2Result> GetBrandCompletedGameResultsV2Async(
-		Uri apiUrl,
-		string brandId,
-		string apiKey,
-		DateTime startTime,
-		DateTime endTime,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
+	public async IAsyncEnumerable<GetBrandCompletedGameResultsV2Result> GetBrandCompletedGameResultsV2Async(Uri apiUrl, string brandId, string apiKey, DateTime startTime, DateTime endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
 		var request = new GetBrandCompletedGameResultsV2Request
 		{
@@ -62,10 +57,10 @@ internal class GameApiClient(
 
 		var url = new Uri(apiUrl, "/jsonapi/GetBrandCompletedGameResultsV2");
 		var jsonNode = await PostAsync(
-			url,
-			request,
-			"GetBrandCompletedGameResultsV2",
-			cancellationToken).ConfigureAwait(false)
+			apiUrl: url,
+			request: request,
+			logPrefix: nameof(GetBrandCompletedGameResultsV2Async),
+			cancellationToken: cancellationToken).ConfigureAwait(false)
 			?? throw new Exception("Document is empty.");
 
 		var results = jsonNode.AsArray();
@@ -95,18 +90,7 @@ internal class GameApiClient(
 		}
 	}
 
-	public async ValueTask<string> LoginOrCreatePlayerAsync(
-		Uri apiUrl,
-		string brandId,
-		string apiKey,
-		string username,
-		string password,
-		string currencyCode,
-		string useragent,
-		string playerHostAddress,
-		string? firstName,
-		string? lastName,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<string> LoginOrCreatePlayerAsync(Uri apiUrl, string brandId, string apiKey, string username, string password, string currencyCode, string useragent, string playerHostAddress, string? firstName, string? lastName, CancellationToken cancellationToken = default)
 	{
 		var request = new LoginOrCreatePlayerRequest
 		{
@@ -124,10 +108,10 @@ internal class GameApiClient(
 
 		var url = new Uri(apiUrl, "/jsonapi/loginorcreateplayer");
 		var jsonNode = await PostAsync(
-			url,
-			request,
-			"LoginOrCreatePlayer",
-			cancellationToken).ConfigureAwait(false)
+			apiUrl: url,
+			request: request,
+			logPrefix: nameof(LoginOrCreatePlayerAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false)
 			?? throw new Exception("Document is empty.");
 
 		return jsonNode["Token"]!.GetValue<string>();
@@ -145,10 +129,10 @@ internal class GameApiClient(
 
 		var url = new Uri(apiUrl, "/jsonapi/logoutplayer");
 		var jsonNode = await PostAsync(
-			url,
-			request,
-			"LogOutPlayer",
-			cancellationToken).ConfigureAwait(false)
+			apiUrl: url,
+			request: request,
+			logPrefix: nameof(LogOutPlayerAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false)
 			?? throw new Exception("Document is empty.");
 
 		if (!jsonNode["Success"]!.GetValue<bool>())
@@ -169,10 +153,10 @@ internal class GameApiClient(
 
 		var url = new Uri(apiUrl, "/jsonapi/QueryPlayer");
 		var jsonNode = await PostAsync(
-			url,
-			request,
-			"QueryPlayer",
-			cancellationToken).ConfigureAwait(false)
+			apiUrl: url,
+			request: request,
+			logPrefix: nameof(QueryPlayerAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false)
 			?? throw new Exception("Document is empty.");
 
 		return !jsonNode["Found"]!.GetValue<bool>()
@@ -196,10 +180,10 @@ internal class GameApiClient(
 
 		var url = new Uri(apiUrl, "/jsonapi/QueryTransfer");
 		var jsonNode = await PostAsync(
-			url,
-			request,
-			"QueryTransfer",
-			cancellationToken).ConfigureAwait(false)
+			apiUrl: url,
+			request: request,
+			logPrefix: nameof(QueryTransferAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false)
 			?? throw new Exception("Document is empty.");
 
 		return jsonNode["Success"]!.GetValue<bool>();
@@ -221,10 +205,10 @@ internal class GameApiClient(
 
 		var url = new Uri(apiUrl, "/jsonapi/WithdrawPlayerMoney");
 		var jsonNode = await PostAsync(
-			url,
-			request,
-			"WithdrawPlayerMoney",
-			cancellationToken).ConfigureAwait(false)
+			apiUrl: url,
+			request: request,
+			logPrefix: nameof(WithdrawPlayerMoneyAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false)
 			?? throw new Exception("Document is empty.");
 
 		if (jsonNode["Success"]!.GetValue<bool>() is false)
@@ -235,17 +219,14 @@ internal class GameApiClient(
 		var transactionId = jsonNode["TransactionId"]!.GetValue<string>();
 		var realBalance = jsonNode["RealBalance"]!.GetValue<decimal>();
 
-		return new WithdrawPlayerMoneyResult(transactionId, realBalance);
+		return new WithdrawPlayerMoneyResult(transactionId, realBalance, jsonNode.ToJsonString());
 	}
 
 	private async ValueTask<JsonNode> PostAsync(Uri apiUrl, object request, string logPrefix, CancellationToken cancellationToken = default)
 	{
-		logPrefix = $"{nameof(GameApiClient)}.{logPrefix}".ToLower();
-
 		var sw = Stopwatch.StartNew();
 
-		HttpContent content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8,
-			"application/json");
+		HttpContent content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json);
 
 		var httpResponseMessage = await client.PostAsync(apiUrl, content, cancellationToken).ConfigureAwait(false);
 
@@ -261,7 +242,7 @@ internal class GameApiClient(
 				.ConfigureAwait(false) ?? string.Empty;
 		}
 
-		var apiLogEvent = new GameApiLogEvent
+		var apiLogEvent = new
 		{
 			Path = httpResponseMessage.RequestMessage?.RequestUri?.AbsoluteUri.NoLongerThan(512) ?? string.Empty,
 			Method = httpResponseMessage.RequestMessage?.Method.ToString().NoLongerThan(8) ?? string.Empty,

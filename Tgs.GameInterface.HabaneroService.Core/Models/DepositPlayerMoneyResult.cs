@@ -2,4 +2,5 @@
 
 public record DepositPlayerMoneyResult(
 	string TransactionId,
-	decimal Balance);
+	decimal Balance,
+	string Resp);

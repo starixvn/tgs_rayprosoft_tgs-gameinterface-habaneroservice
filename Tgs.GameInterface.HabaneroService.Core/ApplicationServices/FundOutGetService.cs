@@ -6,21 +6,21 @@ internal class FundOutGetService(IGameApiClient client) : IGetService<FundOutQue
 {
 	public async ValueTask<FundResult> GetAsync(FundOutQuery query, CancellationToken cancellationToken = default)
 	{
-		var result = await client
-			.DepositPlayerMoneyAsync(
-				apiUrl: query.ApiUrl,
-				brandId: query.BrandId,
-				apiKey: query.ApiKey,
-				username: query.Username,
-				password: query.Password,
-				currencyCode: query.CurrencyCode,
-				amount: query.Amount,
-				requestId: query.TransactionId,
-				cancellationToken: cancellationToken)
+		var result = await client.DepositPlayerMoneyAsync(
+			apiUrl: query.ApiUrl,
+			brandId: query.BrandId,
+			apiKey: query.ApiKey,
+			username: query.Username,
+			password: query.Password,
+			currencyCode: query.CurrencyCode,
+			amount: query.Amount,
+			requestId: query.TransactionId,
+			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
 		return new FundResult(
 			TransactionId: result.TransactionId,
-			Balance: result.Balance);
+			Balance: result.Balance,
+			Resp: result.Resp);
 	}
 }

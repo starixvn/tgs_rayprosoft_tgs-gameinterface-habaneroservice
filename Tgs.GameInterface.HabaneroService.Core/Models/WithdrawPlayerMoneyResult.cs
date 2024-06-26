@@ -2,4 +2,5 @@
 
 public record WithdrawPlayerMoneyResult(
 	string TransactionId,
-	decimal Balance);
+	decimal Balance,
+	string Resp);
